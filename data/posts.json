@@ -1,0 +1,32 @@
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "title": "Node.js ile Blog Sitesi Yapımı - Bölüm 1: Başlangıç ve Proje Kurulumu",
+    "content": "Bu yazı serisinde sıfırdan bir blog sitesi nasıl yapılır, adım adım anlatacağım. İlk bölümümüzde temel kurulumu ve proje yapısını oluşturacağız.\n\nÖncelikle bilgisayarınızda Node.js'in kurulu olması gerekiyor. Node.js'i nodejs.org adresinden indirebilirsiniz.\n\nProje Kurulumu:\n1. Yeni bir klasör oluşturun: `mkdir blog-sitesi`\n2. Klasöre gidin: `cd blog-sitesi`\n3. Proje başlatın: `npm init -y`\n4. Gerekli paketleri yükleyin:\n   ```bash\n   npm install express ejs body-parser uuid\n   npm install nodemon --save-dev\n   ```\n\nPaketlerin görevleri:\n- express: Web sunucusu için\n- ejs: HTML şablonları için\n- body-parser: Form verilerini okumak için\n- uuid: Benzersiz ID'ler oluşturmak için\n- nodemon: Geliştirme sırasında otomatik yenileme için\n\nBir sonraki yazıda Express sunucumuzu kuracağız ve temel rotaları oluşturacağız.",
+    "date": "2024-03-15T10:30:00.000Z"
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "title": "Node.js ile Blog Sitesi Yapımı - Bölüm 2: Express Sunucu ve Temel Yapı",
+    "content": "Bu bölümde Express sunucumuzu kuracağız ve temel dosya yapısını oluşturacağız.\n\nÖnce klasör yapımızı oluşturalım:\n```\nblog-sitesi/\n  ├── data/\n  │   └── posts.json\n  ├── public/\n  │   └── style.css\n  ├── views/\n  │   ├── index.ejs\n  │   ├── create.ejs\n  │   ├── edit.ejs\n  │   └── post.ejs\n  ├── package.json\n  └── app.js\n```\n\napp.js dosyamızı oluşturalım:\n```javascript\nconst express = require('express');\nconst bodyParser = require('body-parser');\nconst fs = require('fs').promises;\nconst path = require('path');\nconst { v4: uuidv4 } = require('uuid');\n\nconst app = express();\nconst PORT = 3000;\n\n// Middleware\napp.set('view engine', 'ejs');\napp.use(express.static('public'));\napp.use(bodyParser.urlencoded({ extended: true }));\n\napp.listen(PORT, () => {\n    console.log(`Server http://localhost:${PORT} adresinde çalışıyor`);\n});\n```\n\nBir sonraki yazıda blog yazılarını nasıl saklayacağımızı ve listeleyeceğimizi öğreneceğiz.",
+    "date": "2024-03-14T15:45:00.000Z"
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440002",
+    "title": "Node.js ile Blog Sitesi Yapımı - Bölüm 3: Veri Yönetimi ve CRUD İşlemleri",
+    "content": "Bu bölümde blog yazılarını JSON dosyasında nasıl saklayacağımızı ve CRUD (Create, Read, Update, Delete) işlemlerini nasıl gerçekleştireceğimizi öğreneceğiz.\n\nÖnce veri okuma ve yazma fonksiyonlarımızı oluşturalım:\n```javascript\n// Posts dosyasının yolu\nconst postsPath = path.join(__dirname, 'data', 'posts.json');\n\n// Posts dosyasını oku\nasync function getPosts() {\n    try {\n        const data = await fs.readFile(postsPath, 'utf8');\n        const posts = JSON.parse(data);\n        return posts.sort((a, b) => new Date(b.date) - new Date(a.date));\n    } catch (error) {\n        await fs.writeFile(postsPath, '[]', 'utf8');\n        return [];\n    }\n}\n\n// Posts dosyasına yaz\nasync function savePosts(posts) {\n    await fs.writeFile(postsPath, JSON.stringify(posts, null, 2));\n}\n```\n\nŞimdi CRUD rotalarını ekleyelim:\n```javascript\n// Ana sayfa - Tüm postları listele\napp.get('/', async (req, res) => {\n    const posts = await getPosts();\n    res.render('index', { posts });\n});\n\n// Yeni post oluştur\napp.post('/post/new', async (req, res) => {\n    const posts = await getPosts();\n    const newPost = {\n        id: uuidv4(),\n        title: req.body.title,\n        content: req.body.content,\n        date: new Date().toISOString()\n    };\n    posts.push(newPost);\n    await savePosts(posts);\n    res.redirect('/');\n});\n```\n\nBir sonraki yazıda şablonlarımızı (views) oluşturacağız ve frontend kısmını tamamlayacağız.",
+    "date": "2024-03-13T09:20:00.000Z"
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440003",
+    "title": "Node.js ile Blog Sitesi Yapımı - Bölüm 4: Frontend ve Şablonlar",
+    "content": "Bu bölümde EJS şablonlarımızı oluşturacağız ve frontend tasarımını tamamlayacağız.\n\nÖnce index.ejs dosyamızı oluşturalım:\n```html\n<!DOCTYPE html>\n<html>\n<head>\n    <title>Blog Sitesi</title>\n    <link rel=\"stylesheet\" href=\"/style.css\">\n</head>\n<body>\n    <div class=\"container\">\n        <h1>Blog Yazıları</h1>\n        <a href=\"/post/new\" class=\"button\">Yeni Yazı Ekle</a>\n        \n        <div class=\"posts\">\n            <% posts.forEach(post => { %>\n                <div class=\"post-card\">\n                    <h2><%= post.title %></h2>\n                    <p><%= new Date(post.date).toLocaleDateString() %></p>\n                    <a href=\"/post/<%= post.id %>\" class=\"button\">Devamını Oku</a>\n                </div>\n            <% }); %>\n        </div>\n    </div>\n</body>\n</html>\n```\n\nCSS dosyamızı oluşturalım:\n```css\nbody {\n    font-family: Arial, sans-serif;\n    margin: 0;\n    padding: 20px;\n    background-color: #f0f0f0;\n}\n\n.container {\n    max-width: 800px;\n    margin: 0 auto;\n    background-color: white;\n    padding: 20px;\n    border-radius: 5px;\n    box-shadow: 0 0 10px rgba(0,0,0,0.1);\n}\n```\n\nBir sonraki ve son yazımızda projeyi nasıl yayınlayacağımızı öğreneceğiz.",
+    "date": "2024-03-12T14:15:00.000Z"
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440004",
+    "title": "Node.js ile Blog Sitesi Yapımı - Bölüm 5: Projeyi Yayınlama",
+    "content": "Serimizin son bölümünde projemizi nasıl yayınlayacağımızı öğreneceğiz.\n\nÖnce package.json dosyamızı production için güncelleyelim:\n```json\n{\n    \"scripts\": {\n        \"start\": \"node app.js\",\n        \"build\": \"npm install --production\",\n        \"dev\": \"nodemon app.js\"\n    }\n}\n```\n\nPort numarasını dinamik hale getirelim:\n```javascript\nconst PORT = process.env.PORT || 3000;\n```\n\nProjeyi yayınlamak için Render.com'u kullanacağız:\n1. Render.com'da ücretsiz hesap açın\n2. 'New Web Service' seçin\n3. GitHub reponuzu bağlayın\n4. Ayarları yapın:\n   - Build Command: npm install\n   - Start Command: npm start\n\nÖnemli Notlar:\n- .gitignore dosyası oluşturun:\n  ```\n  node_modules/\n  .env\n  ```\n- Dosya sistemi yerine veritabanı kullanmak daha iyi olacaktır\n- Environment variables kullanarak hassas bilgileri koruyun\n\nBu yazı serisi ile temel bir blog sitesi oluşturduk. Buradan sonra özellikler ekleyebilir, tasarımı geliştirebilir ve kendi ihtiyaçlarınıza göre özelleştirebilirsiniz.",
+    "date": "2024-03-11T11:50:00.000Z"
+  }
+]

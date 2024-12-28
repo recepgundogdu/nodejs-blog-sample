@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Yeni Yazı Ekle</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Yeni Yazı Ekle</h1>
+        <form action="/post/new" method="POST">
+            <div>
+                <label>Başlık:</label>
+                <input type="text" name="title" required>
+            </div>
+            <div>
+                <label>İçerik:</label>
+                <textarea name="content" required></textarea>
+            </div>
+            <button type="submit" class="button">Kaydet</button>
+        </form>
+        <a href="/" class="button">Geri Dön</a>
+    </div>
+</body>
+
+</html>

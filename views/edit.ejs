@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Yazı Düzenle</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Yazı Düzenle</h1>
+        <form action="/post/<%= post.id %>/edit" method="POST">
+            <div>
+                <label>Başlık:</label>
+                <input type="text" name="title" value="<%= post.title %>" required>
+            </div>
+            <div>
+                <label>İçerik:</label>
+                <textarea name="content" required><%= post.content %></textarea>
+            </div>
+            <button type="submit" class="button">Güncelle</button>
+        </form>
+        <a href="/post/<%= post.id %>" class="button">Geri Dön</a>
+    </div>
+</body>
+
+</html>

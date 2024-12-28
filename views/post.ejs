@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        <%= post.title %>
+    </title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>
+            <%= post.title %>
+        </h1>
+        <p class="date">
+            <%= new Date(post.date).toLocaleDateString() %>
+        </p>
+        <div class="content">
+            <%- post.content %>
+        </div>
+        <div class="actions">
+            <a href="/post/<%= post.id %>/edit" class="button">Düzenle</a>
+            <form action="/post/<%= post.id %>/delete" method="POST" style="display: inline;">
+                <button type="submit" class="button delete">Sil</button>
+            </form>
+            <a href="/" class="button">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+</body>
+
+</html>
