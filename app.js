@@ -50,7 +50,6 @@ app.get('/post/new', (req, res) => {
 
 // Yeni post oluşturma
 app.post('/post/new', async (req, res) => {
-    /* Güvenlik nedeniyle devre dışı bırakıldı
     const posts = await getPosts();
     const newPost = {
         id: uuidv4(),
@@ -61,8 +60,6 @@ app.post('/post/new', async (req, res) => {
     posts.push(newPost);
     await savePosts(posts);
     res.redirect('/');
-    */
-    res.render('blocked');
 });
 
 // Post detay sayfası
@@ -83,7 +80,6 @@ app.get('/post/:id/edit', async (req, res) => {
 
 // Post güncelleme
 app.post('/post/:id/edit', async (req, res) => {
-    /* Güvenlik nedeniyle devre dışı bırakıldı
     const posts = await getPosts();
     const index = posts.findIndex(p => p.id === req.params.id);
     if (index === -1) return res.redirect('/');
@@ -96,19 +92,14 @@ app.post('/post/:id/edit', async (req, res) => {
 
     await savePosts(posts);
     res.redirect(`/post/${req.params.id}`);
-    */
-    res.render('blocked');
 });
 
 // Post silme
 app.post('/post/:id/delete', async (req, res) => {
-    /* Güvenlik nedeniyle devre dışı bırakıldı
     const posts = await getPosts();
     const filteredPosts = posts.filter(p => p.id !== req.params.id);
     await savePosts(filteredPosts);
     res.redirect('/');
-    */
-    res.render('blocked');
 });
 
 app.listen(PORT, () => {
